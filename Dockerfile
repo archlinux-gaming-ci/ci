@@ -6,6 +6,10 @@ RUN echo "builduser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 RUN pacman -Syu --noconfirm && pacman -S --noconfirm git sudo
 
+COPY ./dist/* /dist/
+
+RUN find /dist/ -type f -name "*.pkg.tar.zst" -exec pacman --noconfirm -U {} \;
+
 ARG PACKAGE_NAME
 
 USER builduser

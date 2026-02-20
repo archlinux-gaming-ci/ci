@@ -2,7 +2,7 @@ name: AUR Package Build & Publish
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
@@ -13,11 +13,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        package:
+        package_group:
           - lutris-git
           - umu-launcher-git
-          - lib32-mesa-git
-          - mesa-git
+          - mesa-git lib32-mesa-git
 
     steps:
       - name: Checkout repository
@@ -29,13 +28,16 @@ jobs:
       - name: Create output directory
         run: mkdir -p dist
 
-      - name: Build ${{ matrix.package }}
-        run: ./docker-build-package.sh ${{ matrix.package }} dist
+      - name: Build ${{ matrix.package_group }}
+        run: |
+          for pkg in ${{ matrix.package_group }}; do
+            ./docker-build-package.sh "$pkg" dist
+          done
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pkg-${{ matrix.package }}
+          name: pkg-${{ matrix.package_group }}
           path: dist/*.pkg.tar.zst
           retention-days: 1
 
