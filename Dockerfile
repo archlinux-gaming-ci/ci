@@ -1,10 +1,10 @@
-FROM archlinux:latest AS builder
+FROM archlinux:multilib-devel AS builder
 
 RUN useradd -m builduser
 
 RUN echo "builduser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-RUN pacman -Syu --noconfirm && pacman -S --noconfirm base-devel git sudo
+RUN pacman -Syu --noconfirm && pacman -S --noconfirm git sudo
 
 ARG PACKAGE_NAME
 
