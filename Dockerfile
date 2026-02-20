@@ -4,6 +4,10 @@ RUN useradd -m builduser
 
 RUN echo "builduser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+RUN sed -i -e '/^OPTIONS=/s/!debug/debug/' -e '/^OPTIONS=/s/debug/!debug/' /etc/makepkg.conf
+
+RUN sed -i -e '/^OPTIONS=/s/!lto/lto/' -e '/^OPTIONS=/s/lto/!lto/' /etc/makepkg.conf
+
 RUN pacman -Syu --noconfirm && pacman -S --noconfirm git sudo
 
 COPY ./dist/* /dist/
