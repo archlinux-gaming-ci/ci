@@ -14,8 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - mesa-git
-          - lib32-mesa-git
           - lutris-git
           - umu-launcher-git
 
