@@ -76,6 +76,9 @@ jobs:
           fetch-depth: 0
 
       - name: Build Repository
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           ./ci-docker-build-repo.sh ./new_packages/ ./repo_git/x86_64/
 
