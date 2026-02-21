@@ -11,7 +11,6 @@ function cleanup() {
 trap cleanup EXIT
 
 package=$1
-output_dir=$2
 
 if [[ -z "${package}" ]]; then
     echo "expected $0 <package>"

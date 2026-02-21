@@ -7,16 +7,23 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-packages:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package_group:
-          - lutris-git
-          - umu-launcher-git
-          - mesa-git lib32-mesa-git
+        include:
+          - name: lutris
+            packages: lutris-git
+          - name: umu-launcher
+            packages: umu-launcher-git
+          - name: mesa
+            packages: mesa-git lib32-mesa-git
 
     steps:
       - name: Checkout repository
@@ -28,22 +35,27 @@ jobs:
       - name: Create output directory
         run: mkdir -p dist
 
-      - name: Build ${{ matrix.package_group }}
+      - name: Build ${{ matrix.name }}
+        env:
+          packages: ${{ matrix.packages }}
         run: |
-          for pkg in ${{ matrix.package_group }}; do
-            ./docker-build-package.sh "$pkg" dist
+          for pkg in $packages; do
+            ./docker-build-package.sh "$pkg"
           done
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pkg-${{ matrix.package_group }}
+          name: pkg-${{ matrix.name }}
           path: dist/*.pkg.tar.zst
           retention-days: 1
 
   publish-repo:
     needs: build-packages
     runs-on: ubuntu-latest
+    concurrency:
+      group: publish-repo
+      cancel-in-progress: false
     steps:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
@@ -65,11 +77,14 @@ jobs:
           mv new_packages/*.pkg.tar.zst repo-dist/x86_64/
           docker run --rm -v ${{ github.workspace }}/repo-dist/x86_64:/repo archlinux/archlinux:base-devel /bin/bash -c "cd /repo && repo-add -n -R archlinux-gaming-ci.db.tar.gz *.pkg.tar.zst"
 
-      - name: Commit and Push
+      - name: Commit and Push (Recreate History)
         working-directory: repo-dist
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add .
+          git checkout --orphan new_main
+          git add -A
           git commit -m "Update packages: $(date -u +'%Y-%m-%d %H:%M:%S')"
-          git push origin main
+          git branch -D main
+          git branch -M main
+          git push --force origin main
