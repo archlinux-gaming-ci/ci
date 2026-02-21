@@ -5,13 +5,16 @@ import urllib.parse
 from datetime import datetime
 
 
+entries_denylist = ["index.html", ".git"]
+
+
 def generate_index(folder, root_folder):
     entries = os.listdir(folder)
     header_text = html.escape(os.path.relpath(folder, root_folder))
     out_html = f"<html><head><title>{header_text}</title></head><body><h1>{header_text}</h1><ul>"
 
     for entry in sorted(entries):
-        if entry == "index.html":
+        if entry in entries_denylist:
             continue
 
         full_path = os.path.join(folder, entry)
@@ -33,7 +36,7 @@ def generate_index(folder, root_folder):
         f.write(out_html)
 
     for entry in entries:
-        if entry == "index.html":
+        if entry in entries_denylist:
             continue
         full_path = os.path.join(folder, entry)
         if os.path.isdir(full_path):
