@@ -22,8 +22,8 @@ jobs:
             packages: lutris-git
           - name: umu-launcher
             packages: umu-launcher-git
-          - name: mesa
-            packages: mesa-git lib32-mesa-git
+          #- name: mesa
+          #  packages: mesa-git lib32-mesa-git
 
     steps:
       - name: Checkout repository
@@ -40,7 +40,7 @@ jobs:
           packages: ${{ matrix.packages }}
         run: |
           for pkg in $packages; do
-            ./docker-build-package.sh "$pkg"
+            ./ci-docker-build-package.sh "$pkg"
           done
 
       - name: Upload Artifact
@@ -57,6 +57,9 @@ jobs:
       group: publish-repo
       cancel-in-progress: false
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -69,16 +72,15 @@ jobs:
         with:
           repository: archlinux-gaming-ci/archlinux-gaming-ci.github.io
           token: ${{ secrets.RELEASE_TOKEN }}
-          path: repo-dist
+          path: repo_git
           fetch-depth: 0
 
-      - name: Move Packages and Update Database
+      - name: Build Repository
         run: |
-          mv new_packages/*.pkg.tar.zst repo-dist/x86_64/
-          docker run --rm -v ${{ github.workspace }}/repo-dist/x86_64:/repo archlinux/archlinux:base-devel /bin/bash -c "cd /repo && repo-add -n -R archlinux-gaming-ci.db.tar.gz *.pkg.tar.zst"
+          ./ci-docker-build-repo.sh ./new_packages/ ./repo_git/x86_64/
 
       - name: Commit and Push (Recreate History)
-        working-directory: repo-dist
+        working-directory: repo_git
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
