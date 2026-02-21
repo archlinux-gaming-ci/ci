@@ -31,5 +31,5 @@ for pkg in "${new_pkgs_dir}"/*.pkg.tar.zst; do
   gpg --batch --yes --default-key "${GPG_KEY_ID}" --output "${pkg}.sig" --detach-sig "${pkg}"
   cp "${pkg}" "${repo_dir}"/
   cp "${pkg}".sig "${repo_dir}"/
-  repo-add --remove --sign --key "${GPG_KEY_ID}" "${repo_dir}"/archlinux-gaming-ci.db.tar.gz "${repo_dir}"/*.pkg.tar.zst
+  repo-add --remove --sign --key "${GPG_KEY_ID}" "${repo_dir}"/archlinux-gaming-ci.db.tar.gz "${repo_dir}"/$(basename "${pkg}")
 done
