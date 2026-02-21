@@ -22,8 +22,8 @@ jobs:
             packages: lutris-git
           - name: umu-launcher
             packages: umu-launcher-git
-          #- name: mesa
-          #  packages: mesa-git lib32-mesa-git
+          - name: mesa
+            packages: mesa-git lib32-mesa-git
 
     steps:
       - name: Checkout repository
