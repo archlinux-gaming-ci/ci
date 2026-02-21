@@ -81,6 +81,7 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           ./ci-docker-build-repo.sh ./new_packages/ ./repo_git/x86_64/
+          python3 ./generate-index-html.py ./repo_git/
 
       - name: Commit and Push (Recreate History)
         working-directory: repo_git

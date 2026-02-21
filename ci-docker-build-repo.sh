@@ -28,8 +28,10 @@ fi
 new_pkgs_dir=$(realpath "${new_pkgs_dir}")
 repo_dir=$(realpath "${repo_dir}")
 
+buildreposh=$(realpath ./ci-script-build-repo.sh)
+
 docker run --rm \
   --env GPG_KEY_ID="${GPG_KEY_ID}" --env GPG_PRIVATE_KEY="${GPG_PRIVATE_KEY}" \
-  --volume ./ci-script-build-repo.sh:/ci-script-build-repo.sh:ro \
+  --volume "${buildreposh}":/ci-script-build-repo.sh:ro \
   --volume "${new_pkgs_dir}":/new_pkgs --volume "${repo_dir}":/repo \
   archlinux:base-devel /ci-script-build-repo.sh /new_pkgs /repo
