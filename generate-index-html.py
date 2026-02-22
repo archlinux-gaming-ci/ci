@@ -4,14 +4,17 @@ import html
 import urllib.parse
 from datetime import datetime
 
-
-entries_denylist = ["index.html", ".git"]
+index_filename = "index.html"
+entries_denylist = [index_filename, ".git", ".nojekyl"]
 
 
 def generate_index(folder, root_folder):
     entries = os.listdir(folder)
     header_text = html.escape(os.path.relpath(folder, root_folder))
     out_html = f"<html><head><title>{header_text}</title></head><body><h1>{header_text}</h1><ul>"
+
+    if folder != root_folder:
+        out_html += f'<li><a href="../{index_filename}">..</a></li>'
 
     for entry in sorted(entries):
         if entry in entries_denylist:
@@ -22,25 +25,18 @@ def generate_index(folder, root_folder):
         mdate = datetime.fromtimestamp(mtime).strftime("%Y-%m-%d %H:%M:%S")
 
         safe_name = html.escape(entry)
+        safe_link = urllib.parse.quote(entry)
 
         if os.path.isdir(full_path):
-            safe_link = urllib.parse.quote(entry) + "/index.html"
-        else:
-            safe_link = urllib.parse.quote(entry)
+            safe_link += "/" + index_filename
+            generate_index(full_path, root_folder)
 
         out_html += f'<li><a href="{safe_link}">{safe_name}</a> {mdate}</li>'
 
     out_html += "</ul></body></html>"
 
-    with open(os.path.join(folder, "index.html"), "w", encoding="utf-8") as f:
+    with open(os.path.join(folder, index_filename), "w", encoding="utf-8") as f:
         f.write(out_html)
-
-    for entry in entries:
-        if entry in entries_denylist:
-            continue
-        full_path = os.path.join(folder, entry)
-        if os.path.isdir(full_path):
-            generate_index(full_path, root_folder)
 
 
 def main():
