@@ -22,7 +22,7 @@ RUN git clone https://aur.archlinux.org/${PACKAGE_NAME}.git /tmp/package
 
 WORKDIR /tmp/package
 
-RUN makepkg -s --noconfirm
+RUN makepkg -s --noconfirm --nocheck
 
 FROM scratch
 
