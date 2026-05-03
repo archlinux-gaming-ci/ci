@@ -10,7 +10,7 @@ RUN pacman -Syu --noconfirm && pacman -S --noconfirm git sudo
 
 COPY ./dist/* /dist/
 
-RUN find /dist/ -type f -name "*.pkg.tar.zst" -exec pacman --noconfirm -U {} \;
+RUN find /dist/ -type f -name "*.pkg.tar.zst" -exec pacman --noconfirm -U {} +
 
 ARG PACKAGE_NAME
 
