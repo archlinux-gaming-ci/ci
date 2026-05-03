@@ -23,7 +23,7 @@ jobs:
           - name: umu-launcher
             packages: umu-launcher-git
           - name: mesa
-            packages: libdrm-git mesa-git lib32-mesa-git
+            packages: libdrm-git lib32-libdrm-git mesa-git lib32-mesa-git
 
     steps:
       - name: Checkout repository
