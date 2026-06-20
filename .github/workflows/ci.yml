@@ -24,6 +24,8 @@ jobs:
             packages: umu-launcher-git
           - name: mesa
             packages: libdrm-git lib32-libdrm-git mesa-git lib32-mesa-git
+          - name: proton
+            packages: proton-cachyos-v3-bin
 
     steps:
       - name: Checkout repository
